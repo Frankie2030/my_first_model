@@ -15,8 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
+from app.views import EndpointViewSet, MLModelViewSet, MLModelStatusViewSet, MLRequestViewSet
 
+# Initialize the DRF router
+router = DefaultRouter(trailing_slash=False)
+router.register(r"endpoints", EndpointViewSet, basename="endpoints")
+router.register(r"mlmodels", MLModelViewSet, basename="mlmodels")
+router.register(r"mlmodelstatuses", MLModelStatusViewSet, basename="mlmodelstatuses")
+router.register(r"mlrequests", MLRequestViewSet, basename="mlrequests")
+
+# Define the URL patterns
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    re_path(r"^api/v1/", include(router.urls)),  # Use re_path for regex-based URLs
+    path('admin/', admin.site.urls),  # Use path for simple non-regex URLs
 ]
+
